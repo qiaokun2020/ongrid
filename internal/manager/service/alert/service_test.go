@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -352,11 +354,18 @@ func (f *fakeNotifier) Send(_ context.Context, msg notify.Message, channels ...s
 func TestServiceTestChannelHappyPath(t *testing.T) {
 	t.Parallel()
 
+	// TestChannel now builds a typed sender from the channel + POSTs directly
+	// (bypassing the global notify master switch), so point the endpoint at a
+	// real test server; a 200 means the delivery link works.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
 	repo := &channelRepoStub{rows: []*model.Channel{
-		{ID: 9, Name: "primary-feishu", ChannelType: model.ChannelTypeFeishu, Enabled: true, ConfigJSON: `{"endpoint":"https://hook.example.test/abc"}`},
+		{ID: 9, Name: "primary-feishu", ChannelType: model.ChannelTypeFeishu, Enabled: true, ConfigJSON: `{"endpoint":"` + srv.URL + `"}`},
 	}}
-	notifier := &fakeNotifier{}
-	svc := &Service{repo: repo, notifier: notifier, log: slog.Default()}
+	svc := &Service{repo: repo, notifier: &fakeNotifier{}, log: slog.Default()}
 	got, err := svc.TestChannel(context.Background(), Caller{}, 9)
 	if err != nil {
 		t.Fatalf("TestChannel() err = %v", err)
@@ -364,31 +373,31 @@ func TestServiceTestChannelHappyPath(t *testing.T) {
 	if !got.Accepted {
 		t.Fatalf("TestChannel().Accepted = false, want true; msg=%q", got.Message)
 	}
-	if len(notifier.msgs) != 1 || notifier.msgs[0].Severity != notify.SeverityInfo {
-		t.Fatalf("notifier received = %+v", notifier.msgs)
-	}
-	if len(notifier.channels) != 1 || notifier.channels[0] != "primary-feishu" {
-		t.Fatalf("notifier channels = %v, want [primary-feishu]", notifier.channels)
-	}
 }
 
 func TestServiceTestChannelReportsFailure(t *testing.T) {
 	t.Parallel()
 
+	// Real upstream failure (503) must surface as accepted=false with detail —
+	// not a silent no-op and not "channel not configured".
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer srv.Close()
+
 	repo := &channelRepoStub{rows: []*model.Channel{
-		{ID: 1, Name: "broken", ChannelType: model.ChannelTypeWebhook, Enabled: true, ConfigJSON: `{}`},
+		{ID: 1, Name: "broken", ChannelType: model.ChannelTypeWebhook, Enabled: true, ConfigJSON: `{"endpoint":"` + srv.URL + `"}`},
 	}}
-	notifier := &fakeNotifier{err: errors.New("upstream 503")}
-	svc := &Service{repo: repo, notifier: notifier, log: slog.Default()}
+	svc := &Service{repo: repo, notifier: &fakeNotifier{}, log: slog.Default()}
 	got, err := svc.TestChannel(context.Background(), Caller{}, 1)
 	if err != nil {
 		t.Fatalf("TestChannel() err = %v", err)
 	}
 	if got.Accepted {
-		t.Fatalf("TestChannel().Accepted = true, want false")
+		t.Fatalf("TestChannel().Accepted = true, want false (upstream 503)")
 	}
-	if !strings.Contains(got.Message, "upstream 503") {
-		t.Fatalf("TestChannel().Message = %q, want upstream error verbatim", got.Message)
+	if !strings.Contains(got.Message, "503") {
+		t.Fatalf("TestChannel().Message = %q, want 503 detail", got.Message)
 	}
 }
 
