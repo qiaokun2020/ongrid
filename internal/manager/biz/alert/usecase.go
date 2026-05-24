@@ -23,7 +23,7 @@ type Notifier interface {
 	Send(ctx context.Context, msg notify.Message, channels ...string) error
 	// SendVia delivers through an explicitly-built sender — used for
 	// persisted channels whose Sender is constructed per-row from
-	// ChannelType + ConfigJSON (buildSenderFromChannel), rather than
+	// ChannelType + ConfigJSON (BuildSenderFromChannel), rather than
 	// looked up by name. Keeps delivery on the Notifier seam so router
 	// gating + test stubs still apply.
 	SendVia(ctx context.Context, msg notify.Message, sender notify.Sender) error
@@ -1267,7 +1267,7 @@ func (u *Usecase) MaybeNotify(ctx context.Context, res *FiringResult, msg notify
 			// seam (SendVia) so router gating/timeout — and test stubs —
 			// still apply. (Synthetic rows, ID==0, bridge to the
 			// env-config notifier by name in the else branch.)
-			if sender, berr := buildSenderFromChannel(ch); berr != nil {
+			if sender, berr := BuildSenderFromChannel(ch); berr != nil {
 				sendErr = berr
 			} else {
 				sendErr = opts.Notifier.SendVia(ctx, msg, sender)
@@ -1335,7 +1335,7 @@ func channelHasDestination(ch *model.Channel) bool {
 	return strings.TrimSpace(cfg["endpoint"]) != "" || strings.TrimSpace(cfg["url"]) != ""
 }
 
-// buildSenderFromChannel constructs a notify.Sender from a persisted
+// BuildSenderFromChannel constructs a notify.Sender from a persisted
 // channel's ChannelType + ConfigJSON. Until this existed, UI/seeded
 // channels were never actually delivered: MaybeNotify sent by name to the
 // env-config Router (which only knows env-config channel names), and
@@ -1343,7 +1343,7 @@ func channelHasDestination(ch *model.Channel) bool {
 // hand-created channel silently no-op'd. The URL lives under the
 // "endpoint" key (encodeChannelConfig); "secret" is the optional signing /
 // credential field (it carries the chat_id for telegram).
-func buildSenderFromChannel(ch *model.Channel) (notify.Sender, error) {
+func BuildSenderFromChannel(ch *model.Channel) (notify.Sender, error) {
 	cfg, err := ch.Config()
 	if err != nil {
 		return nil, fmt.Errorf("decode channel config: %w", err)

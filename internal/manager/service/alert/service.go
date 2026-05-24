@@ -534,7 +534,19 @@ func (s *Service) TestChannel(ctx context.Context, _ Caller, id uint64) (*Channe
 		DedupeKey:  fmt.Sprintf("channel-test-%d", channel.ID),
 		OccurredAt: time.Now().UTC(),
 	}
-	sendErr := s.notifier.Send(ctx, msg, channel.Name)
+	// Build the typed sender from the channel's ChannelType + ConfigJSON and
+	// send DIRECTLY — a manual test must attempt real delivery regardless of
+	// the global ONGRID_NOTIFY_ENABLED master switch (an operator testing a
+	// channel wants to know it works, not get a silent no-op). This also
+	// fixes the prior by-name path, which only matched env-config channel
+	// names and returned "channel not configured" for UI-created channels.
+	sender, berr := bizalert.BuildSenderFromChannel(channel)
+	if berr != nil {
+		return &ChannelTestResult{Accepted: false, Message: berr.Error()}, nil
+	}
+	sctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	sendErr := sender.Send(sctx, msg)
 	out := &ChannelTestResult{Accepted: sendErr == nil}
 	if sendErr != nil {
 		out.Message = sendErr.Error()

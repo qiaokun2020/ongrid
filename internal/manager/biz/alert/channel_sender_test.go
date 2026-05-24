@@ -19,7 +19,7 @@ func TestBuildSenderFromChannel(t *testing.T) {
 	}
 	for _, typ := range types {
 		ch := chWithConfig(typ+"-1", typ, map[string]string{"endpoint": "https://example.com/x", "secret": "s"})
-		s, err := buildSenderFromChannel(ch)
+		s, err := BuildSenderFromChannel(ch)
 		if err != nil {
 			t.Fatalf("%s: unexpected err %v", typ, err)
 		}
@@ -29,19 +29,19 @@ func TestBuildSenderFromChannel(t *testing.T) {
 	}
 
 	// Empty type falls back to the generic webhook sender.
-	if _, err := buildSenderFromChannel(chWithConfig("x", "", map[string]string{"endpoint": "https://x"})); err != nil {
+	if _, err := BuildSenderFromChannel(chWithConfig("x", "", map[string]string{"endpoint": "https://x"})); err != nil {
 		t.Errorf("empty type: %v", err)
 	}
 	// Legacy "url" key still resolves an endpoint.
-	if _, err := buildSenderFromChannel(chWithConfig("l", "webhook", map[string]string{"url": "https://x"})); err != nil {
+	if _, err := BuildSenderFromChannel(chWithConfig("l", "webhook", map[string]string{"url": "https://x"})); err != nil {
 		t.Errorf("legacy url key: %v", err)
 	}
 	// No endpoint → error (this is what channelHasDestination also guards).
-	if _, err := buildSenderFromChannel(chWithConfig("none", "slack", map[string]string{})); err == nil {
+	if _, err := BuildSenderFromChannel(chWithConfig("none", "slack", map[string]string{})); err == nil {
 		t.Error("expected error for missing endpoint")
 	}
 	// Unknown type → error.
-	if _, err := buildSenderFromChannel(chWithConfig("m", "mystery", map[string]string{"endpoint": "https://x"})); err == nil {
+	if _, err := BuildSenderFromChannel(chWithConfig("m", "mystery", map[string]string{"endpoint": "https://x"})); err == nil {
 		t.Error("expected error for unknown channel type")
 	}
 }
