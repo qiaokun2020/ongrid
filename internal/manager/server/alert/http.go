@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 
 	bizaudit "github.com/ongridio/ongrid/internal/manager/biz/audit"
+	"github.com/ongridio/ongrid/internal/manager/biz/alert/investigator"
 	alertmodel "github.com/ongridio/ongrid/internal/manager/model/alert"
 	auditmodel "github.com/ongridio/ongrid/internal/manager/model/audit"
 	svc "github.com/ongridio/ongrid/internal/manager/service/alert"
@@ -68,6 +70,12 @@ type InvestigationReader interface {
 // Implemented by biz/alert/investigator.Usecase.ForceEnqueue.
 type InvestigationTrigger interface {
 	ForceEnqueue(ctx context.Context, incident *alertmodel.Incident) error
+	// ForceEnqueueWith carries per-request overrides; today the only one
+	// that flows through is opts.Locale (from Accept-Language) so a
+	// manual re-trigger returns a report in the operator's UI language.
+	// Implementations satisfy this by extending ForceEnqueue with the
+	// EnqueueOpts struct — see biz/alert/investigator.Usecase.
+	ForceEnqueueWith(ctx context.Context, incident *alertmodel.Incident, opts investigator.EnqueueOpts) error
 }
 
 // InvestigationReport is the wire-level shape the handler returns.
@@ -357,8 +365,11 @@ func (h *Handler) triggerIncidentInvestigation(w http.ResponseWriter, r *http.Re
 	// ForceEnqueue replaces any existing row (kills running worker if
 	// any), then spawns fresh. The SPA continues to GET the same
 	// incident's investigation endpoint and watches status transition
-	// pending → running → ready.
-	if err := h.investigationsTrigger.ForceEnqueue(r.Context(), incident); err != nil {
+	// pending → running → ready. Threads the operator's Accept-Language
+	// through so the regenerated report matches the current UI locale —
+	// see [[feedback_ai_output_locale]]: AI 输出语言跟随用户 UI locale.
+	opts := investigator.EnqueueOpts{Locale: localeFromRequest(r)}
+	if err := h.investigationsTrigger.ForceEnqueueWith(r.Context(), incident, opts); err != nil {
 		writeErr(w, fmt.Errorf("%w: %s", errs.ErrInvalid, err))
 		return
 	}
@@ -929,6 +940,32 @@ func errCode(err error) int {
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
+	}
+}
+
+// localeFromRequest picks the operator's preferred locale from the
+// Accept-Language header (sent by the SPA from web/src/i18n/locale.ts).
+// Returns a primary subtag — "en" or "zh" — or "" when unset / unknown.
+// The investigator's Config.DefaultLocale catches the empty case for
+// auto-fire / backfill (no request context). See
+// [[feedback_ai_output_locale]] for the convention.
+func localeFromRequest(r *http.Request) string {
+	if r == nil {
+		return ""
+	}
+	raw := strings.TrimSpace(r.Header.Get("Accept-Language"))
+	if raw == "" {
+		return ""
+	}
+	// Take the first language-tag; ignore q-values. "en-US,en;q=0.9" → "en-US".
+	first := strings.SplitN(raw, ",", 2)[0]
+	// Drop region: "en-US" → "en".
+	primary := strings.ToLower(strings.SplitN(strings.TrimSpace(first), "-", 2)[0])
+	switch primary {
+	case "en", "zh":
+		return primary
+	default:
+		return ""
 	}
 }
 

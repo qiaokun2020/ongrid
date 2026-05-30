@@ -1496,6 +1496,13 @@ func main() {
 				SummarizerProvider: firstNonEmpty(os.Getenv("ONGRID_INVESTIGATOR_SUMMARIZER_PROVIDER"), defSumProvider),
 				SummarizerTimeout:  30 * time.Second,
 				MaxConcurrent:      maxCC,
+				// Fall-back language for auto-fire + backfill (no request
+				// context, no Accept-Language). Manual triggers override per
+				// request. Default "en" so a fresh deployment matches the
+				// English SPA by default; ops sets ONGRID_DEFAULT_LOCALE=zh
+				// for an explicitly Chinese-default install.
+				// See [[feedback_ai_output_locale]].
+				DefaultLocale: firstNonEmpty(os.Getenv("ONGRID_DEFAULT_LOCALE"), "en"),
 			}, log)
 			// Same InvestigationRepo also implements the
 			// related-alerts query (same DB handle, different method).
