@@ -1,8 +1,6 @@
-# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> ongrid
+# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> Ongrid
 
-> **An AI agent for Operations.** Put a lightweight agent on every host; Ongrid reasons over your metrics, logs, traces, topology, and source code to pinpoint root cause in plain language.
->
-> *Built for SRE, DevOps, and platform teams.*
+> **An AI agent that knows your systems.** *Closes the loop between alert and answer — across metrics, logs, traces, and code.*
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ongridio/ongrid)](https://goreportcard.com/report/github.com/ongridio/ongrid)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -20,11 +18,16 @@ English | [简体中文](./README_ZH.md) | [日本語](./README_JA.md) | [한국
 
 ## Install
 
-Download the latest release tarball and run the installer (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9):
+Download the latest release, extract it, and run the installer (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9):
 
 ```bash
-gh release download v0.7.167 --repo ongridio/ongrid -p 'ongrid-v0.7.167-linux-amd64.tar.xz*'
-tar xf ongrid-v0.7.167-linux-amd64.tar.xz && cd ongrid-v0.7.167-linux-amd64
+# 1. Download latest release (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9)
+wget https://github.com/ongridio/ongrid/releases/download/v0.7.159/ongrid-v0.7.159-linux-amd64.tar.xz
+
+# 2. Extract
+tar -xf ongrid-v0.7.159-linux-amd64.tar.xz && cd ongrid-v0.7.159-linux-amd64
+
+# 3. Install
 sudo ./install.sh
 ```
 

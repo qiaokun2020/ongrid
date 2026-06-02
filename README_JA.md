@@ -1,8 +1,6 @@
-# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> ongrid
+# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> Ongrid
 
-> **運用のための AI エージェント。** 各ホストに軽量エージェントを配置すると、Ongrid がメトリクス・ログ・トレース・トポロジー・ソースコードを横断的に分析し、自然言語で根本原因を特定します。
->
-> *SRE・DevOps・プラットフォームチームのために。*
+> **システムを理解する運用 AI エージェント。** *アラートから根本原因まで —— メトリクス・ログ・トレース・コードを横断的に。*
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ongridio/ongrid)](https://goreportcard.com/report/github.com/ongridio/ongrid)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -20,11 +18,16 @@
 
 ## インストール
 
-最新リリースの tarball をダウンロードし、インストーラーを実行します（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）：
+最新リリースをダウンロードし、展開してインストーラーを実行します（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）：
 
 ```bash
-gh release download v0.7.167 --repo ongridio/ongrid -p 'ongrid-v0.7.167-linux-amd64.tar.xz*'
-tar xf ongrid-v0.7.167-linux-amd64.tar.xz && cd ongrid-v0.7.167-linux-amd64
+# 1. 最新リリースをダウンロード（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）
+wget https://github.com/ongridio/ongrid/releases/download/v0.7.159/ongrid-v0.7.159-linux-amd64.tar.xz
+
+# 2. 展開
+tar -xf ongrid-v0.7.159-linux-amd64.tar.xz && cd ongrid-v0.7.159-linux-amd64
+
+# 3. インストール
 sudo ./install.sh
 ```
 

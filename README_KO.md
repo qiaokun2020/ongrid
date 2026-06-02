@@ -1,8 +1,6 @@
-# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> ongrid
+# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> Ongrid
 
-> **운영을 위한 AI 에이전트.** 모든 호스트에 경량 에이전트를 설치하면 Ongrid가 메트릭·로그·트레이스·토폴로지·소스 코드를 종합 분석해 자연어로 근본 원인을 짚어냅니다.
->
-> *SRE, DevOps, 플랫폼 팀을 위해 만들었습니다.*
+> **시스템을 이해하는 운영 AI 에이전트.** *알림과 근본 원인을 잇다 —— 메트릭, 로그, 트레이스, 소스 코드 전반에 걸쳐.*
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ongridio/ongrid)](https://goreportcard.com/report/github.com/ongridio/ongrid)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -20,11 +18,16 @@
 
 ## 설치
 
-최신 릴리스 tarball을 다운로드하고 설치 스크립트를 실행하세요 (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9):
+최신 릴리스를 다운로드하고 압축을 푼 다음 설치 스크립트를 실행하세요 (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9):
 
 ```bash
-gh release download v0.7.167 --repo ongridio/ongrid -p 'ongrid-v0.7.167-linux-amd64.tar.xz*'
-tar xf ongrid-v0.7.167-linux-amd64.tar.xz && cd ongrid-v0.7.167-linux-amd64
+# 1. 최신 릴리스 다운로드 (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9)
+wget https://github.com/ongridio/ongrid/releases/download/v0.7.159/ongrid-v0.7.159-linux-amd64.tar.xz
+
+# 2. 압축 해제
+tar -xf ongrid-v0.7.159-linux-amd64.tar.xz && cd ongrid-v0.7.159-linux-amd64
+
+# 3. 설치
 sudo ./install.sh
 ```
 

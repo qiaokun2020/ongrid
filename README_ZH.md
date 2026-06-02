@@ -1,8 +1,6 @@
-# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> ongrid
+# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> Ongrid
 
-> **面向运维的 AI Agent。** 给每台主机装上一个轻量 agent，Ongrid 综合分析你的指标、日志、链路、拓扑与源码，用自然语言直接定位根因。
->
-> *为 SRE、DevOps 与平台团队打造。*
+> **懂你系统的 AI 运维 Agent。** *把告警和根因接起来 —— 跨指标、日志、链路和源码。*
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ongridio/ongrid)](https://goreportcard.com/report/github.com/ongridio/ongrid)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -20,11 +18,16 @@
 
 ## 安装
 
-下载最新 release 包并运行安装脚本（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）：
+下载最新 release，解压后运行安装脚本（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）：
 
 ```bash
-gh release download v0.7.167 --repo ongridio/ongrid -p 'ongrid-v0.7.167-linux-amd64.tar.xz*'
-tar xf ongrid-v0.7.167-linux-amd64.tar.xz && cd ongrid-v0.7.167-linux-amd64
+# 1. 下载最新 release（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）
+wget https://github.com/ongridio/ongrid/releases/download/v0.7.159/ongrid-v0.7.159-linux-amd64.tar.xz
+
+# 2. 解压
+tar -xf ongrid-v0.7.159-linux-amd64.tar.xz && cd ongrid-v0.7.159-linux-amd64
+
+# 3. 安装
 sudo ./install.sh
 ```
 

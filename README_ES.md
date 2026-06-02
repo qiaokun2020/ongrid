@@ -1,8 +1,6 @@
-# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> ongrid
+# <img src="web/public/ongrid-logo.svg" alt="" width="40" align="absmiddle" style="vertical-align: middle;" /> Ongrid
 
-> **Un agente de IA para Operaciones.** Pon un agente ligero en cada host; Ongrid analiza tus métricas, logs, trazas, topología y código fuente para identificar la causa raíz en lenguaje natural.
->
-> *Hecho para equipos de SRE, DevOps y plataforma.*
+> **Un agente de IA que conoce tus sistemas.** *Cierra el bucle entre alerta y causa raíz —— a través de métricas, logs, trazas y código.*
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ongridio/ongrid)](https://goreportcard.com/report/github.com/ongridio/ongrid)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -20,11 +18,16 @@
 
 ## Instalación
 
-Descarga el tarball de la última release y ejecuta el instalador (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9):
+Descarga la última release, descomprímela y ejecuta el instalador (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9):
 
 ```bash
-gh release download v0.7.167 --repo ongridio/ongrid -p 'ongrid-v0.7.167-linux-amd64.tar.xz*'
-tar xf ongrid-v0.7.167-linux-amd64.tar.xz && cd ongrid-v0.7.167-linux-amd64
+# 1. Descarga la última release (Ubuntu 22.04+, Debian 12+, RHEL/Rocky 9)
+wget https://github.com/ongridio/ongrid/releases/download/v0.7.159/ongrid-v0.7.159-linux-amd64.tar.xz
+
+# 2. Descomprimir
+tar -xf ongrid-v0.7.159-linux-amd64.tar.xz && cd ongrid-v0.7.159-linux-amd64
+
+# 3. Instalar
 sudo ./install.sh
 ```
 
