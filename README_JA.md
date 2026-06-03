@@ -22,10 +22,10 @@
 
 ```bash
 # 1. 最新リリースをダウンロード（Ubuntu 22.04+、Debian 12+、RHEL/Rocky 9）
-wget https://github.com/ongridio/ongrid/releases/download/v0.7.159/ongrid-v0.7.159-linux-amd64.tar.xz
+wget https://github.com/ongridio/ongrid/releases/download/v0.7.167/ongrid-v0.7.167-linux-amd64.tar.xz
 
 # 2. 展開
-tar -xf ongrid-v0.7.159-linux-amd64.tar.xz && cd ongrid-v0.7.159-linux-amd64
+tar -xf ongrid-v0.7.167-linux-amd64.tar.xz && cd ongrid-v0.7.167-linux-amd64
 
 # 3. インストール
 sudo ./install.sh
@@ -42,26 +42,26 @@ make compose-up    # make compose-down to stop
 
 ## 機能
 
-- **Coordinator + Specialist の階層 Agent** — coordinator が対話と派遣を担当し、SRE / ネットワーク / DB / アセット の specialist サブ agent にルーティング。各 specialist は独立した toolbag と persona を持ち、UI ロケールは全チェーンで伝搬。
-- **アラート発火で自動調査** — アラートが鳴る → investigator が RCA worker を派遣 → 根本原因 + 証拠チェーンをチャットセッションに書き戻す。当番不在の時間帯でも動く。
-- **根本原因 RCA、表層対話ではない** — Agent がサービストポロジーで影響範囲を分析し、メトリクス / ログ / トレースを相関させ、「なぜ」を**ソースコードの行**まで特定する。
-- **インバウンドポートゼロ** — edge がアウトバウンドダイヤル。ホストは 22 / 80 / 443 を開かない。テレメトリのデータプレーンと制御プレーンは分離。
-- **ブラウザ SSH** — 同じアウトバウンドトンネルを逆方向で開通し、UI から任意ホストの対話シェルへ。SSH 鍵配布も踏み台も 22 番ポートも不要。全コマンド監査。
-- **1 コマンドでセルフホスト** — `docker compose up` でフルスタック起動（manager + MySQL + Qdrant + frontier）。SaaS 依存ゼロ。
-- **可観測性スタック組み込み** — Prometheus (メトリクス) / Loki (ログ) / Tempo (トレース) / Grafana (ダッシュボード) を自動配備。自然言語で質問すれば Agent が PromQL / LogQL / TraceQL を書く。
-- **任意モデル持ち込み** — Anthropic / OpenAI / GLM / DeepSeek / Gemini / Kimi、その他 OpenAI 互換エンドポイント全般。プロバイダールーティングとデフォルトモデルの切り替えは無再起動。
-- **双方向 IM チャネル** — Slack / Telegram / Larksuite (Feishu) / DingTalk / WeCom。チームが普段話す場所からそのまま問い合わせ。チャネル別 allow-list とチャネル別ロケール。
-- **読み取り専用ホストツール、全コール監査** — bash (サンドボックス)、`host_probe_*`、`query_promql`、`expand_topology` など 26+ のツール。Viewer ロールは ClassSafe のみ。
+- 🤖 **Coordinator + Specialist の階層 Agent** — coordinator が対話と派遣を担当し、SRE / ネットワーク / DB / アセット の specialist サブ agent にルーティング。各 specialist は独立した toolbag と persona を持ち、UI ロケールは全チェーンで伝搬。
+- 🚨 **アラート発火で自動調査** — アラートが鳴る → investigator が RCA worker を派遣 → 根本原因 + 証拠チェーンをチャットセッションに書き戻す。当番不在の時間帯でも動く。
+- 🔍 **根本原因 RCA、表層対話ではない** — Agent がサービストポロジーで影響範囲を分析し、メトリクス / ログ / トレースを相関させ、「なぜ」を**ソースコードの行**まで特定する。
+- 🔒 **インバウンドポートゼロ** — edge がアウトバウンドダイヤル。ホストは 22 / 80 / 443 を開かない。テレメトリのデータプレーンと制御プレーンは分離。
+- 💻 **ブラウザ SSH** — 同じアウトバウンドトンネルを逆方向で開通し、UI から任意ホストの対話シェルへ。SSH 鍵配布も踏み台も 22 番ポートも不要。全コマンド監査。
+- 🐳 **1 コマンドでセルフホスト** — `docker compose up` でフルスタック起動（manager + MySQL + Qdrant + frontier）。SaaS 依存ゼロ。
+- 📊 **可観測性スタック組み込み** — Prometheus (メトリクス) / Loki (ログ) / Tempo (トレース) / Grafana (ダッシュボード) を自動配備。自然言語で質問すれば Agent が PromQL / LogQL / TraceQL を書く。
+- 🧠 **任意モデル持ち込み** — Anthropic / OpenAI / GLM / DeepSeek / Gemini / Kimi、その他 OpenAI 互換エンドポイント全般。プロバイダールーティングとデフォルトモデルの切り替えは無再起動。
+- 💬 **双方向 IM チャネル** — Slack / Telegram / Larksuite (Feishu) / DingTalk / WeCom。チームが普段話す場所からそのまま問い合わせ。チャネル別 allow-list とチャネル別ロケール。
+- 🛠️ **読み取り専用ホストツール、全コール監査** — bash (サンドボックス)、`host_probe_*`、`query_promql`、`expand_topology` など 26+ のツール。Viewer ロールは ClassSafe のみ。
 
 ## インテグレーション
 
 チームの可観測性・チャネル・モデルスタックにそのまま組み込めます。
 
-<p align="center"><b>可観測性</b> &nbsp;&nbsp; <img src="https://api.iconify.design/logos:prometheus.svg" alt="Prometheus" title="Prometheus" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:grafana.svg" alt="Grafana" title="Grafana" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/loki.svg" alt="Loki" title="Loki" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/tempo.svg" alt="Tempo" title="Tempo" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/opentelemetry.svg" alt="OpenTelemetry" title="OpenTelemetry" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:qdrant-icon.svg" alt="Qdrant" title="Qdrant" width="28" height="28" /></p>
-
-<p align="center"><b>チャネル</b> &nbsp;&nbsp; <img src="https://api.iconify.design/logos:slack-icon.svg" alt="Slack" title="Slack" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:telegram.svg" alt="Telegram" title="Telegram" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/larksuite.svg" alt="Larksuite" title="Larksuite" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/dingtalk.svg" alt="DingTalk" title="DingTalk" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/wechat" alt="WeCom" title="WeCom" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:webhooks.svg" alt="Webhook" title="Webhook" width="28" height="28" /></p>
-
-<p align="center"><b>モデル</b> &nbsp;&nbsp; <img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/claude-color.svg" alt="Anthropic" title="Anthropic" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/openai.svg" alt="OpenAI" title="OpenAI" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/gemini-color.svg" alt="Gemini" title="Gemini" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg" alt="DeepSeek" title="DeepSeek" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/zhipu.svg" alt="Zhipu" title="Zhipu" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/kimi-color.svg" alt="Kimi" title="Kimi" width="28" height="28" /></p>
+| | |
+|---|---|
+| **可観測性** | <img src="https://api.iconify.design/logos:prometheus.svg" alt="Prometheus" title="Prometheus" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:grafana.svg" alt="Grafana" title="Grafana" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/loki.svg" alt="Loki" title="Loki" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/tempo.svg" alt="Tempo" title="Tempo" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/opentelemetry.svg" alt="OpenTelemetry" title="OpenTelemetry" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:qdrant-icon.svg" alt="Qdrant" title="Qdrant" width="28" height="28" /> |
+| **チャネル** | <img src="https://api.iconify.design/logos:slack-icon.svg" alt="Slack" title="Slack" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:telegram.svg" alt="Telegram" title="Telegram" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/larksuite.svg" alt="Larksuite" title="Larksuite" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/dingtalk.svg" alt="DingTalk" title="DingTalk" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/wechat" alt="WeCom" title="WeCom" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/logos:webhooks.svg" alt="Webhook" title="Webhook" width="28" height="28" /> |
+| **モデル** | <img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/claude-color.svg" alt="Anthropic" title="Anthropic" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/openai.svg" alt="OpenAI" title="OpenAI" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/gemini-color.svg" alt="Gemini" title="Gemini" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg" alt="DeepSeek" title="DeepSeek" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="docs/assets/integrations/zhipu.svg" alt="Zhipu" title="Zhipu" width="28" height="28" />&nbsp;&nbsp;&nbsp;<img src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/kimi-color.svg" alt="Kimi" title="Kimi" width="28" height="28" /> |
 
 ## ライセンス
 
