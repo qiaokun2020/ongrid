@@ -240,26 +240,42 @@ func (g *workerGenerator) fail(ctx context.Context, rpt *model.Report, reason st
 // ContentJSON schema + entity-token instructions; this is just the
 // payload + override.
 func (g *workerGenerator) buildPrompt(rpt *model.Report, facts *ReportFacts) string {
+	// Localize the SCAFFOLDING too — a fully-English prompt biases the
+	// model to write English prose, where a Chinese directive bolted onto
+	// a Chinese prompt left weaker models (deepseek-v4-flash) leaking
+	// Chinese into the paragraph bodies. See feedback_ai_output_locale.
+	en := strings.HasPrefix(strings.ToLower(g.localeFor(rpt)), "en")
+	mtr := func(zh, eng string) string {
+		if en {
+			return eng
+		}
+		return zh
+	}
 	var b strings.Builder
-	b.WriteString("生成一份运维报告。下面是本周期已经算好的事实数据（数字均为准确值，禁止改动或新增数字）：\n\n```json\n")
+	b.WriteString(mtr(
+		"生成一份运维报告。下面是本周期已经算好的事实数据（数字均为准确值，禁止改动或新增数字）：",
+		"Write an operations report. Below are the pre-computed facts for this period (every number is exact — do NOT change or invent any number):"))
+	b.WriteString("\n\n```json\n")
 	b.WriteString(factsJSON(facts))
 	b.WriteString("\n```\n\n")
-	b.WriteString(fmt.Sprintf("报告周期：%s — %s（%s）。\n", rpt.PeriodStart.Format("2006-01-02"), rpt.PeriodEnd.Format("2006-01-02"), rpt.Kind))
+	b.WriteString(mtr(
+		fmt.Sprintf("报告周期：%s — %s（%s）。\n", rpt.PeriodStart.Format("2006-01-02"), rpt.PeriodEnd.Format("2006-01-02"), rpt.Kind),
+		fmt.Sprintf("Report period: %s — %s (%s).\n", rpt.PeriodStart.Format("2006-01-02"), rpt.PeriodEnd.Format("2006-01-02"), rpt.Kind)))
 	if override := g.scheduleOverride(rpt); override != "" {
-		b.WriteString("\n额外要求：\n")
+		b.WriteString(mtr("\n额外要求：\n", "\nAdditional requirements:\n"))
 		b.WriteString(override)
 		b.WriteString("\n")
 	}
-	// Explicit output-language directive — the prompt + persona are in
-	// Chinese, so without this the model narrates in Chinese even when the
-	// operator's UI is English. Mirrors the investigator's localeDirective.
-	// See feedback_ai_output_locale.
+	// Explicit output-language directive on top of the localized
+	// scaffolding — belt and braces for weak models.
 	if d := localeDirective(g.localeFor(rpt)); d != "" {
 		b.WriteString("\n")
 		b.WriteString(d)
 		b.WriteString("\n")
 	}
-	b.WriteString("\n按 persona 描述的 ContentJSON schema 输出，只输出 JSON。")
+	b.WriteString(mtr(
+		"\n按 persona 描述的 ContentJSON schema 输出，只输出 JSON。",
+		"\nOutput the ContentJSON schema described in the persona. Output JSON only."))
 	return b.String()
 }
 
